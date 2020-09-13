@@ -1,2 +1,2 @@
-# Xamarin-EncryptedUserDefaults
+# TnnCrypto.EncryptedUserDefaults
 Encrypted UserDefaults for Xamarin.iOS (AES256)
