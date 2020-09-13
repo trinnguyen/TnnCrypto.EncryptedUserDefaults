@@ -1,41 +1,42 @@
 ﻿using System;
+using System.Diagnostics;
 using Foundation;
 
 namespace TnnCrypto
 {
     public class EncryptedUserDefaults
     {
-        private readonly AesCrypto _crypto;
         private readonly NSUserDefaults _userDefaults;
+        private readonly IAead _provider;
+        private readonly string _name;
 
         public static EncryptedUserDefaults CreateStandardEncryptedUserDefaults()
         {
-            return new EncryptedUserDefaults("StandardUserDefaults", NSUserDefaults.StandardUserDefaults);
+            return new EncryptedUserDefaults("Standard", NSUserDefaults.StandardUserDefaults);
         }
 
-        public EncryptedUserDefaults(string name, NSUserDefaultsType type) : this(name, new NSUserDefaults(name, type))
+        public EncryptedUserDefaults(string name, NSUserDefaults defaults) : this(name, defaults, new TinkAead(name))
         {
         }
 
-        private EncryptedUserDefaults(string name, NSUserDefaults userDefaults)
+        public EncryptedUserDefaults(string name, NSUserDefaults defaults, IAead provider)
         {
-            _userDefaults = userDefaults;
-            _crypto = new AesCrypto($"__encrypted_def_{name}");
+            _name = name;
+            _userDefaults = defaults;
+            _provider = provider;
         }
+
+        public NSUserDefaults UserDefaults => _userDefaults;
 
         public void SetString(string value, string defaultName)
         {
-            var cipher = _crypto.Encrypt(value);
-            _userDefaults.SetString(cipher, defaultName);
+            SetData(DataFromString(value), defaultName);
         }
 
         public string StringForKey(string defaultName)
         {
-            var raw = _userDefaults.StringForKey(defaultName);
-            if (!string.IsNullOrWhiteSpace(raw))
-                return _crypto.Decrypt(raw);
-
-            return null;
+            NSData data = DataForKey(defaultName);
+            return StringFromData(data);
         }
 
         public void SetInt(int value, string defaultName)
@@ -49,12 +50,6 @@ namespace TnnCrypto
             return bytes != null ? BitConverter.ToInt32(bytes) : 0;
         }
 
-        public void SetInt(bool value, string defaultName)
-        {
-            byte[] bytes = BitConverter.GetBytes(value);
-            _userDefaults.SetString(defaultName, _crypto.Encrypt(Convert.ToBase64String(bytes)));
-        }
-
         public void SetBool(bool value, string defaultName)
         {
             SetBytes(BitConverter.GetBytes(value), defaultName);
@@ -63,7 +58,7 @@ namespace TnnCrypto
         public bool BoolForKey(string defaultName)
         {
             byte[] bytes = BytesForKey(defaultName);
-            return bytes != null ? BitConverter.ToBoolean(bytes) : false;
+            return bytes != null && BitConverter.ToBoolean(bytes);
         }
 
         public void SetFloat(float value, string defaultName)
@@ -90,27 +85,56 @@ namespace TnnCrypto
 
         public bool HasKey(string defaultName)
         {
-            return _userDefaults[defaultName] != null;
+            return _userDefaults[EncryptKey(defaultName)] != null;
+        }
+
+        private void SetData(NSData plainData, string defaultName)
+        {
+            string encryptedKey = EncryptKey(defaultName);
+            Debug.WriteLine($"SetData: {defaultName} => {encryptedKey}");
+            _userDefaults[encryptedKey] = _provider.Encrypt(plainData, DataFromString(defaultName));
+        }
+
+        private NSData DataForKey(string defaultName)
+        {
+            string encryptedKey = EncryptKey(defaultName);
+            Debug.WriteLine($"DataForKey: {defaultName} => {encryptedKey}");
+            if (!(_userDefaults[encryptedKey] is NSData cipherData)) 
+                return null;
+
+            NSData plain = _provider.Decrypt(cipherData, DataFromString(defaultName));
+            cipherData.Dispose();
+            return plain;
+        }
+
+        private string EncryptKey(string defaultName)
+        {
+            NSData cipherKey = _provider.EncryptDeterministically(DataFromString(defaultName), DataFromString(_name));
+            return cipherKey.GetBase64EncodedString(NSDataBase64EncodingOptions.None);
         }
 
         private void SetBytes(byte[] bytes, string defaultName)
         {
-            byte[] cipher = _crypto.Encrypt(bytes);
-            _userDefaults[defaultName] = NSData.FromArray(cipher);
+            SetData(NSData.FromArray(bytes), defaultName);
         }
 
         private byte[] BytesForKey(string defaultName)
         {
-            NSObject obj = _userDefaults[defaultName];
-            if (obj is NSData)
-            {
-                using (NSData cipher = (NSData)obj)
-                {
-                    return _crypto.Decrypt(cipher.ToArray());
-                }
-            }
+            NSData data = DataForKey(defaultName);
+            return data?.ToArray();
+        }
 
-            return null;
+        private static NSData DataFromString(string val)
+        {
+            if (val == null)
+                return null;
+            
+            return NSData.FromString(val, NSStringEncoding.UTF8);
+        }
+
+        private static string StringFromData(NSData data)
+        {
+            return data?.ToString(NSStringEncoding.UTF8);
         }
     }
 }
