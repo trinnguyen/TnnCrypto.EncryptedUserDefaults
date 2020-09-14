@@ -87,6 +87,11 @@ namespace TnnCrypto
         {
             return _userDefaults[EncryptKey(defaultName)] != null;
         }
+        
+        public void Remove(string key)
+        {
+            _userDefaults.RemoveObject(EncryptKey(key));
+        }
 
         private void SetData(NSData plainData, string defaultName)
         {
@@ -109,6 +114,9 @@ namespace TnnCrypto
 
         private string EncryptKey(string defaultName)
         {
+            if (string.IsNullOrWhiteSpace(defaultName))
+                throw new ArgumentNullException(nameof(defaultName));
+            
             NSData cipherKey = _provider.EncryptDeterministically(DataFromString(defaultName), DataFromString(_name));
             return cipherKey.GetBase64EncodedString(NSDataBase64EncodingOptions.None);
         }

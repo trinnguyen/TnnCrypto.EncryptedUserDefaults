@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TnnCrypto", "TnnCrypto\TnnCrypto.csproj", "{1AD98FF0-C729-4955-A84D-BE1A7BF0A785}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TnnCrypto.Tests", "TnnCrypto.Tests\TnnCrypto.Tests.csproj", "{09EEFDD1-AD9B-4849-A83F-02F3A878E4A2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1AD98FF0-C729-4955-A84D-BE1A7BF0A785}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AD98FF0-C729-4955-A84D-BE1A7BF0A785}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AD98FF0-C729-4955-A84D-BE1A7BF0A785}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AD98FF0-C729-4955-A84D-BE1A7BF0A785}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09EEFDD1-AD9B-4849-A83F-02F3A878E4A2}.Debug|Any CPU.ActiveCfg = Debug|iPhoneSimulator
+		{09EEFDD1-AD9B-4849-A83F-02F3A878E4A2}.Debug|Any CPU.Build.0 = Debug|iPhoneSimulator
+		{09EEFDD1-AD9B-4849-A83F-02F3A878E4A2}.Release|Any CPU.ActiveCfg = Release|iPhoneSimulator
+		{09EEFDD1-AD9B-4849-A83F-02F3A878E4A2}.Release|Any CPU.Build.0 = Release|iPhoneSimulator
+	EndGlobalSection
+EndGlobal
