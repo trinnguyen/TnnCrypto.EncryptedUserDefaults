@@ -5,7 +5,7 @@
 - Keyset is generated at runtime if not exist, stored in iOS Keychain
 
 ## Install Nuget package
-- `<PackageReference Include="TnnCrypto.EncryptedUserDefaults" Version="1.0.0" />`
+- https://www.nuget.org/packages/TnnCrypto.EncryptedUserDefaults
 
 ## Usage
 - Checkout tests: [EncryptedUserDefaultsTests.cs](TnnCrypto.Tests/Tests/EncryptedUserDefaultsTests.cs)
