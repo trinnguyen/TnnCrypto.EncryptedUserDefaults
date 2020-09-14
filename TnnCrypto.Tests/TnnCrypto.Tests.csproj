@@ -1,0 +1,262 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
+        <ProjectGuid>{09EEFDD1-AD9B-4849-A83F-02F3A878E4A2}</ProjectGuid>
+        <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+        <OutputType>Exe</OutputType>
+        <RootNamespace>TnnCrypto.Tests</RootNamespace>
+        <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
+        <AssemblyName>TnnCrypto.Tests</AssemblyName>
+        <MtouchHttpClientHandler>NSUrlSessionHandler</MtouchHttpClientHandler>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>bin\iPhoneSimulator\Debug</OutputPath>
+        <DefineConstants>DEBUG</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <ConsolePause>false</ConsolePause>
+        <MtouchArch>x86_64</MtouchArch>
+        <MtouchLink>None</MtouchLink>
+        <MtouchDebug>true</MtouchDebug>
+        <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
+        <DebugType>none</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>bin\iPhoneSimulator\Release</OutputPath>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <MtouchLink>None</MtouchLink>
+        <MtouchArch>x86_64</MtouchArch>
+        <ConsolePause>false</ConsolePause>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>bin\iPhone\Debug</OutputPath>
+        <DefineConstants>DEBUG</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <ConsolePause>false</ConsolePause>
+        <MtouchArch>ARM64</MtouchArch>
+        <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
+        <CodesignKey>iPhone Developer</CodesignKey>
+        <MtouchDebug>true</MtouchDebug>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
+        <DebugType>none</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>bin\iPhone\Release</OutputPath>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
+        <MtouchArch>ARM64</MtouchArch>
+        <ConsolePause>false</ConsolePause>
+        <CodesignKey>iPhone Developer</CodesignKey>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Include="Main.cs" />
+        <Compile Include="AppDelegate.cs" />
+        <Compile Include="Tests\EncryptedUserDefaultsTests.cs" />
+        <None Include="Info.plist" />
+        <Compile Include="Properties\AssemblyInfo.cs" />
+        <Content Include="Entitlements.plist" />
+        <InterfaceDefinition Include="LaunchScreen.storyboard" />
+    </ItemGroup>
+    <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.IO.Compression" />
+        <Reference Include="System.Net.Http" />
+        <Reference Include="System.Xml" />
+        <Reference Include="System.Core" />
+        <Reference Include="Xamarin.iOS" />
+    </ItemGroup>
+    <ItemGroup>
+        <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Contents.json">
+            <Visible>false</Visible>
+        </ImageAsset>
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Resources\" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\TnnCrypto\TnnCrypto.csproj">
+        <Project>{1ad98ff0-c729-4955-a84d-be1a7bf0a785}</Project>
+        <Name>TnnCrypto</Name>
+      </ProjectReference>
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="Microsoft.NETCore.Platforms">
+        <Version>1.1.0</Version>
+      </PackageReference>
+      <PackageReference Include="Microsoft.Win32.Primitives">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="NETStandard.Library">
+        <Version>1.6.1</Version>
+      </PackageReference>
+      <PackageReference Include="System.AppContext">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Collections">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Collections.Concurrent">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Console">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Diagnostics.Debug">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Diagnostics.Tools">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Diagnostics.Tracing">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Globalization">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Globalization.Calendars">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.IO">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.IO.Compression">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.IO.Compression.ZipFile">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.IO.FileSystem">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.IO.FileSystem.Primitives">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Linq">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Linq.Expressions">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Net.Http">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Net.Primitives">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Net.Sockets">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.ObjectModel">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Reflection">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Reflection.Extensions">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Reflection.Primitives">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Resources.ResourceManager">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Runtime">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Runtime.Extensions">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Runtime.Handles">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Runtime.InteropServices">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Runtime.Numerics">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Security.Cryptography.Algorithms">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Security.Cryptography.Encoding">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Security.Cryptography.Primitives">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Security.Cryptography.X509Certificates">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Text.Encoding">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Text.Encoding.Extensions">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Text.RegularExpressions">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Threading">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Threading.Tasks">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Threading.Timer">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Xml.ReaderWriter">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="System.Xml.XDocument">
+        <Version>4.3.0</Version>
+      </PackageReference>
+      <PackageReference Include="Tink.iOS">
+        <Version>1.4.0</Version>
+      </PackageReference>
+      <PackageReference Include="Xamarin.Forms">
+        <Version>3.3.0.912540</Version>
+      </PackageReference>
+      <PackageReference Include="xunit">
+        <Version>2.4.1</Version>
+      </PackageReference>
+      <PackageReference Include="xunit.abstractions">
+        <Version>2.0.3</Version>
+      </PackageReference>
+      <PackageReference Include="xunit.analyzers">
+        <Version>0.10.0</Version>
+      </PackageReference>
+      <PackageReference Include="xunit.assert">
+        <Version>2.4.1</Version>
+      </PackageReference>
+      <PackageReference Include="xunit.core">
+        <Version>2.4.1</Version>
+      </PackageReference>
+      <PackageReference Include="xunit.extensibility.core">
+        <Version>2.4.1</Version>
+      </PackageReference>
+      <PackageReference Include="xunit.extensibility.execution">
+        <Version>2.4.1</Version>
+      </PackageReference>
+      <PackageReference Include="xunit.runner.devices">
+        <Version>2.5.25</Version>
+      </PackageReference>
+    </ItemGroup>
+    <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
+</Project>
