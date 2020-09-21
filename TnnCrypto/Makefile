@@ -10,4 +10,4 @@ nuget-pack:
 	nuget pack TnnCrypto.nuspec 
 
 nuget-push:
-	nuget push -Source https://api.nuget.org/v3/index.json
+	echo "nuget push -Source https://api.nuget.org/v3/index.json"

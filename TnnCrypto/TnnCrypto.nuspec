@@ -2,14 +2,14 @@
 <package >
   <metadata>
     <id>TnnCrypto.EncryptedUserDefaults</id>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <authors>Tri Nguyen</authors>
     <owners>Tri Nguyen</owners>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <license type="expression">MIT</license>
     <projectUrl>https://github.com/trinnguyen/TnnCrypto.EncryptedUserDefaults</projectUrl>
     <description>Encrypted UserDefaults for Xamarin.iOS using Google Tink Crypto Library</description>
-    <releaseNotes>First release</releaseNotes>
+    <releaseNotes>Add support for default value, add getter/setter for byte[]</releaseNotes>
     <copyright>Copyright 2020</copyright>
     <tags>UserDefaults EncryptedUserDefaults Tink xamarin.ios</tags>
     <dependencies>
