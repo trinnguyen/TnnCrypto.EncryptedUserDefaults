@@ -6,7 +6,6 @@ namespace TnnCrypto
 {
     public class EncryptedUserDefaults
     {
-        private readonly NSUserDefaults _userDefaults;
         private readonly IAead _provider;
         private readonly string _name;
 
@@ -22,114 +21,151 @@ namespace TnnCrypto
         public EncryptedUserDefaults(string name, NSUserDefaults defaults, IAead provider)
         {
             _name = name;
-            _userDefaults = defaults;
+            UserDefaults = defaults;
             _provider = provider;
         }
 
-        public NSUserDefaults UserDefaults => _userDefaults;
+        public NSUserDefaults UserDefaults { get; }
 
-        public void SetString(string value, string defaultName)
+        public void SetString(string value, string key)
         {
-            SetData(DataFromString(value), defaultName);
+            SetData(DataFromString(value), key);
         }
 
-        public string StringForKey(string defaultName)
+        public string StringForKey(string key, string defValue)
         {
-            NSData data = DataForKey(defaultName);
-            return StringFromData(data);
+            if (!Contains(key))
+                return defValue;
+
+            NSData data = DataForKey(key);
+            if (data == null)
+                return defValue;
+
+            return data.ToString(NSStringEncoding.UTF8);
         }
 
-        public void SetInt(int value, string defaultName)
+        public void SetInt(int value, string key)
         {
-            SetBytes(BitConverter.GetBytes(value), defaultName);
+            SetBytes(BitConverter.GetBytes(value), key);
         }
 
-        public int IntForKey(string defaultName)
+        public int IntForKey(string key, int defValue)
         {
-            byte[] bytes = BytesForKey(defaultName);
-            return bytes != null ? BitConverter.ToInt32(bytes) : 0;
+            return InternalGetForKey(key, defValue, BitConverter.ToInt32);
         }
 
-        public void SetBool(bool value, string defaultName)
+        public void SetBool(bool value, string key)
         {
-            SetBytes(BitConverter.GetBytes(value), defaultName);
+            SetBytes(BitConverter.GetBytes(value), key);
         }
 
-        public bool BoolForKey(string defaultName)
+        public bool BoolForKey(string key, bool defValue)
         {
-            byte[] bytes = BytesForKey(defaultName);
-            return bytes != null && BitConverter.ToBoolean(bytes);
+            return InternalGetForKey(key, defValue, BitConverter.ToBoolean);
         }
 
-        public void SetFloat(float value, string defaultName)
+        public void SetFloat(float value, string key)
         {
-            SetBytes(BitConverter.GetBytes(value), defaultName);
+            SetBytes(BitConverter.GetBytes(value), key);
         }
 
-        public float FloatForKey(string defaultName)
+        public float FloatForKey(string key, float defValue)
         {
-            byte[] bytes = BytesForKey(defaultName);
-            return bytes != null ? BitConverter.ToSingle(bytes) : 0;
+            return InternalGetForKey(key, defValue, BitConverter.ToSingle);
         }
 
-        public void SetDouble(double value, string defaultName)
+        public void SetDouble(double value, string key)
         {
-            SetBytes(BitConverter.GetBytes(value), defaultName);
+            SetBytes(BitConverter.GetBytes(value), key);
         }
 
-        public double DoubleForKey(string defaultName)
+        public double DoubleForKey(string key, double defValue)
         {
-            byte[] bytes = BytesForKey(defaultName);
-            return bytes != null ? BitConverter.ToDouble(bytes) : 0;
+            return InternalGetForKey(key, defValue, BitConverter.ToDouble);
         }
 
-        public bool HasKey(string defaultName)
+        public void SetBytes(byte[] bytes, string key)
         {
-            return _userDefaults[EncryptKey(defaultName)] != null;
+            if (bytes == null)
+                throw new ArgumentNullException(nameof(bytes));
+
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+
+            SetData(NSData.FromArray(bytes), key);
+        }
+
+        public byte[] BytesForKey(string key)
+        {
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+
+            NSData data = DataForKey(key);
+            return data?.ToArray();
+        }
+
+        public bool Contains(string key)
+        {
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+
+            return UserDefaults[EncryptKey(key)] != null;
         }
         
         public void Remove(string key)
         {
-            _userDefaults.RemoveObject(EncryptKey(key));
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+
+            UserDefaults.RemoveObject(EncryptKey(key));
         }
 
-        private void SetData(NSData plainData, string defaultName)
+        private T InternalGetForKey<T>(string key, T defValue, Func<byte[], int, T> converter)
         {
-            string encryptedKey = EncryptKey(defaultName);
-            Debug.WriteLine($"SetData: {defaultName} => {encryptedKey}");
-            _userDefaults[encryptedKey] = _provider.Encrypt(plainData, DataFromString(defaultName));
+            if (!Contains(key))
+                return defValue;
+
+            byte[] bytes = BytesForKey(key);
+            if (bytes == null)
+                return defValue;
+
+            try
+            {
+                return converter(bytes, 0);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                return defValue;
+            }
         }
 
-        private NSData DataForKey(string defaultName)
+        private void SetData(NSData plainData, string key)
         {
-            string encryptedKey = EncryptKey(defaultName);
-            Debug.WriteLine($"DataForKey: {defaultName} => {encryptedKey}");
-            if (!(_userDefaults[encryptedKey] is NSData cipherData)) 
+            string encryptedKey = EncryptKey(key);
+            Debug.WriteLine($"SetData: {key} => {encryptedKey}");
+            UserDefaults[encryptedKey] = _provider.Encrypt(plainData, DataFromString(key));
+        }
+
+        private NSData DataForKey(string key)
+        {
+            string encryptedKey = EncryptKey(key);
+            Debug.WriteLine($"DataForKey: {key} => {encryptedKey}");
+            if (!(UserDefaults[encryptedKey] is NSData cipherData)) 
                 return null;
 
-            NSData plain = _provider.Decrypt(cipherData, DataFromString(defaultName));
+            NSData plain = _provider.Decrypt(cipherData, DataFromString(key));
             cipherData.Dispose();
             return plain;
         }
 
-        private string EncryptKey(string defaultName)
+        private string EncryptKey(string key)
         {
-            if (string.IsNullOrWhiteSpace(defaultName))
-                throw new ArgumentNullException(nameof(defaultName));
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
             
-            NSData cipherKey = _provider.EncryptDeterministically(DataFromString(defaultName), DataFromString(_name));
+            NSData cipherKey = _provider.EncryptDeterministically(DataFromString(key), DataFromString(_name));
             return cipherKey.GetBase64EncodedString(NSDataBase64EncodingOptions.None);
-        }
-
-        private void SetBytes(byte[] bytes, string defaultName)
-        {
-            SetData(NSData.FromArray(bytes), defaultName);
-        }
-
-        private byte[] BytesForKey(string defaultName)
-        {
-            NSData data = DataForKey(defaultName);
-            return data?.ToArray();
         }
 
         private static NSData DataFromString(string val)
@@ -138,11 +174,6 @@ namespace TnnCrypto
                 return null;
             
             return NSData.FromString(val, NSStringEncoding.UTF8);
-        }
-
-        private static string StringFromData(NSData data)
-        {
-            return data?.ToString(NSStringEncoding.UTF8);
         }
     }
 }

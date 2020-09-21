@@ -29,7 +29,7 @@ namespace TnnCrypto.Tests.Tests
             // added
             var def = Create();
             def.SetBool(true, key);
-            Assert.True(def.HasKey(key));
+            Assert.True(def.Contains(key));
             
             // ensure not value
             Assert.False(def.UserDefaults.ToDictionary().ContainsKey(new NSString(key)));
@@ -43,7 +43,7 @@ namespace TnnCrypto.Tests.Tests
             Assert.Throws<ArgumentNullException>(() => Create().SetFloat(0, null));
             Assert.Throws<ArgumentNullException>(() => Create().SetDouble(0, null));
             Assert.Throws<ArgumentNullException>(() => Create().SetBool(false, null));
-            Assert.Throws<ArgumentNullException>(() => Create().HasKey(null));
+            Assert.Throws<ArgumentNullException>(() => Create().Contains(null));
             Assert.Throws<ArgumentNullException>(() => Create().Remove(null));
         }
         
@@ -55,7 +55,7 @@ namespace TnnCrypto.Tests.Tests
             Assert.Throws<ArgumentNullException>(() => Create().SetFloat(0, ""));
             Assert.Throws<ArgumentNullException>(() => Create().SetDouble(0, ""));
             Assert.Throws<ArgumentNullException>(() => Create().SetBool(false, ""));
-            Assert.Throws<ArgumentNullException>(() => Create().HasKey(""));
+            Assert.Throws<ArgumentNullException>(() => Create().Contains(""));
             Assert.Throws<ArgumentNullException>(() => Create().Remove(""));
         }
         
@@ -78,7 +78,7 @@ namespace TnnCrypto.Tests.Tests
             def.SetString(value, key);
             
             // ensure equal
-            Assert.Equal(value, def.StringForKey(key));
+            Assert.Equal(value, def.StringForKey(key, null));
             Assert.False(def.UserDefaults.ToDictionary().ContainsKey(new NSString(key)));
         }
 
@@ -92,7 +92,7 @@ namespace TnnCrypto.Tests.Tests
             def.SetBool(value, key);
             
             // ensure equal
-            Assert.Equal(value, def.BoolForKey(key));
+            Assert.Equal(value, def.BoolForKey(key, false));
             Assert.False(def.UserDefaults.ToDictionary().ContainsKey(new NSString(key)));
         }
         
@@ -109,7 +109,7 @@ namespace TnnCrypto.Tests.Tests
             def.SetInt(value, key);
             
             // ensure equal
-            Assert.Equal(value, def.IntForKey(key));
+            Assert.Equal(value, def.IntForKey(key, 0));
             Assert.False(def.UserDefaults.ToDictionary().ContainsKey(new NSString(key)));
         }
         
@@ -127,7 +127,7 @@ namespace TnnCrypto.Tests.Tests
             def.SetFloat(value, key);
             
             // ensure equal
-            Assert.Equal(value, def.FloatForKey(key));
+            Assert.Equal(value, def.FloatForKey(key, 0));
             Assert.False(def.UserDefaults.ToDictionary().ContainsKey(new NSString(key)));
         }
         
@@ -145,7 +145,7 @@ namespace TnnCrypto.Tests.Tests
             def.SetDouble(value, key);
             
             // ensure equal
-            Assert.Equal(value, def.DoubleForKey(key));
+            Assert.Equal(value, def.DoubleForKey(key, 0));
             Assert.False(def.UserDefaults.ToDictionary().ContainsKey(new NSString(key)));
         }
 
@@ -155,11 +155,11 @@ namespace TnnCrypto.Tests.Tests
             string key = "test_remove";
             var def = Create();
             def.SetInt(10, key);
-            Assert.True(def.HasKey(key));
+            Assert.True(def.Contains(key));
             
             // remove
             def.Remove(key);
-            Assert.False(def.HasKey(key));
+            Assert.False(def.Contains(key));
         }
         
         [Fact]
@@ -170,29 +170,58 @@ namespace TnnCrypto.Tests.Tests
             
             // set init
             def.SetInt(1, key);
-            Assert.Equal(1, def.IntForKey(key));
+            Assert.Equal(1, def.IntForKey(key, 0));
             
             // overwrite by string
             def.SetString("test_remove", key);
-            Assert.Equal("test_remove", def.StringForKey(key));
+            Assert.Equal("test_remove", def.StringForKey(key, null));
             
             // overwrite by bool
             def.SetBool(true, key);
-            Assert.True(def.BoolForKey(key));
+            Assert.True(def.BoolForKey(key, false));
         }
 
         [Fact]
-        public void WrongType_Fail()
+        public void WrongType_Float_Double_Failed()
         {
             string key = "test_wrongtype";
             var def = Create();
             def.SetInt(1, key);
             
             // get float
-            Assert.NotEqual(1, def.FloatForKey(key));
-            Assert.Throws<ArgumentOutOfRangeException>(() => Assert.NotEqual(1, def.DoubleForKey(key)));
-            Assert.True(def.BoolForKey(key));
-            Assert.NotEqual("1", def.StringForKey(key));
+            Assert.NotEqual(1, def.FloatForKey(key, 0));
+            Assert.NotEqual(1, def.DoubleForKey(key, 0));
+            Assert.NotEqual("1", def.StringForKey(key, ""));
+
+            // boolean is true (1 -> true)
+            Assert.True(def.BoolForKey(key, false));
+        }
+
+        [Fact]
+        public void WrongType_String_Double_Failed()
+        {
+            string key = "test_wrongtype_str_d";
+            var def = Create();
+            def.SetString("3.45", key);
+
+            // get float
+            Assert.NotEqual(3.45, def.DoubleForKey(key, 0));
+            Assert.Equal(0, def.DoubleForKey(key, 0));
+        }
+
+        [Fact]
+        public void GetValue_NotExists_Default()
+        {
+            var def = Create();
+            string key = "key_not_exists";
+
+            // get string
+            Assert.Equal("example_def", def.StringForKey(key, "example_def"));
+            Assert.True(def.BoolForKey(key, true));
+            Assert.False(def.BoolForKey(key, false));
+            Assert.Equal(int.MaxValue, def.IntForKey(key, int.MaxValue));
+            Assert.Equal(-3.45f, def.FloatForKey(key, -3.45f));
+            Assert.Equal(3.144567890d, def.DoubleForKey(key, 3.144567890d));
         }
     }
 }
