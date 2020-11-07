@@ -6,7 +6,7 @@ build:
 clean:
 	msbuild /t:Clean
 
-nuget-pack:
+nuget-pack: build
 	nuget pack TnnCrypto.nuspec 
 
 nuget-push:
